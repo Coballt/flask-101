@@ -15,13 +15,24 @@ class TestViews(TestCase):
 
     def test_product_unit_works(self):
         response = self.client.get("/api/v1/products/2")
-        product = response.json
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['name'], 'Socialive.tv')
         self.assertEqual(response.json['id'], 2)
 
     def test_product_unit_not_found(self):
         response = self.client.get("/api/v1/products/89087654")
-        product = response.json
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json['error'], 'Product not found')
+
+    def test_delete_product_not_found(self):
+        response = self.client.delete("/api/v1/products/89087654")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json['error'], 'Product not found')
+
+    def test_delete_product_work(self):
+        response = self.client.delete("/api/v1/products/3")
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.json, None)
+        response_get = self.client.get("/api/v1/products/3")
+        self.assertEqual(response_get.status_code, 404)
+        self.assertEqual(response_get.json['error'], 'Product not found')
