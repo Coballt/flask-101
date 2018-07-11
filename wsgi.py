@@ -11,6 +11,8 @@ def hello():
 def products():
     the_products = [
         { 'id': 1, 'name': 'Skello' },
-        { 'id': 2, 'name': 'Socialive.tv' }
+        { 'id': 2, 'name': 'Socialive.tv' },
+        { 'id': 3, 'name': 'Scality' },
+        { 'id': 4, 'name': 'Actifio' }
     ]
     return jsonify(the_products)
