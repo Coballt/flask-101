@@ -57,3 +57,23 @@ class TestViews(TestCase):
         response = self.client.post("/api/v1/products", data=json.dumps(payload))
         self.assertEqual(response.status_code, 422)
         self.assertEqual(response.json['error'], "Bad payload received")
+
+    def test_upd_product_payload_missing_param(self):
+        payload = { 'youpi': 'Fakeproduct4' }
+        response = self.client.patch("/api/v1/products/1", data=json.dumps(payload))
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.json['error'], "Bad payload received")
+
+    def test_upd_product_not_existing(self):
+        payload = { 'name': 'Fakeproduct5' }
+        response = self.client.patch("/api/v1/products/99999999", data=json.dumps(payload))
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json['error'], 'Product not found')
+
+    def test_upd_product_works(self):
+        payload = { 'name': 'Fakeproduct5' }
+        response = self.client.patch("/api/v1/products/1", data=json.dumps(payload))
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.json, None)
+        response_get = self.client.get("/api/v1/products/1")
+        self.assertEqual(response_get.json['name'], 'Fakeproduct5')
