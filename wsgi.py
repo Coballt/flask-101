@@ -53,3 +53,16 @@ def add_product():
     the_products.append({ 'id': max_id+1, 'name': payload['name'] })
     return jsonify({ 'id': max_id+1, 'name': payload['name'] }), 201
 
+@app.route('/api/v1/products/<int:id>', methods=['PATCH'])
+def change_product(id):
+    try:
+        payload = json.loads(request.data)
+    except ValueError :
+        return jsonify({"error" : "Bad payload received"}), 422
+    if 'name' not in payload:
+        return jsonify({"error" : "Bad payload received"}), 422
+    for product in the_products:
+        if product['id'] == id:
+            product['name'] = payload['name']
+            return '', 204
+    return jsonify({'error' : 'Product not found'}), 404
