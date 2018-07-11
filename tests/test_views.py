@@ -1,5 +1,6 @@
 # tests/test_views.py
 from flask_testing import TestCase
+import json
 from wsgi import app
 
 class TestViews(TestCase):
@@ -36,3 +37,23 @@ class TestViews(TestCase):
         response_get = self.client.get("/api/v1/products/3")
         self.assertEqual(response_get.status_code, 404)
         self.assertEqual(response_get.json['error'], 'Product not found')
+
+    def test_add_product_work(self):
+        payload = { 'name': 'Fakeproduct' }
+        response = self.client.post("/api/v1/products", data=json.dumps(payload))
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json['name'], 'Fakeproduct')
+
+    def test_add_product_fail(self):
+        payload = { 'name': 'Fakeproduct2' }
+        self.client.post("/api/v1/products", data=json.dumps(payload))
+        response = self.client.post("/api/v1/products", data=json.dumps(payload))
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.json['error'], "Product already exists")
+
+    def test_add_product_payload_missing_param(self):
+        payload = { 'youpi': 'Fakeproduct3' }
+        self.client.post("/api/v1/products", data=json.dumps(payload))
+        response = self.client.post("/api/v1/products", data=json.dumps(payload))
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.json['error'], "Bad payload received")
